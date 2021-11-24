@@ -102,5 +102,13 @@ int main(int argc, char const *argv[])
         }
         inputfile.close();
     }
+    cout<<"Please input start node, end node, and approach:";
+    int rq_s,rq_e,rq_a;
+    cin>>rq_s>>rq_e>>rq_a;
+    rq_s-=1;rq_e-=1;
+    int step=0, dis=0, mid_node=0;
+    while(mid_node!=rq_e){
+
+    }
     return 0;
 }
