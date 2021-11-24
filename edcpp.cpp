@@ -5,7 +5,7 @@ using namespace std;
 
 class route{
     public:
-        int snode, enode,limit;
+        double snode, enode,limit;
         double rl,rw;
 
         void setValue(double,double,double,double,double);
@@ -32,15 +32,15 @@ bool route::exam(int n){
     }
     if(snode==enode){
         cout<<"self loop";
-        valid=true;
+        valid=false;
     }
     if (rl<0){
         cout<<"road length is negative";
-        valid=true;
+        valid=false;
     }
     if(rw<0){
         cout<<"road width is negative";
-        valid=true;
+        valid=false;
     }
     
     return valid;
@@ -64,8 +64,18 @@ int main(int argc, char const *argv[])
         int n;
         //nodemap:[0]road length [1]road width [2]limit
         inputfile>>n;
+        float nodemap[n][n][3];
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                nodemap[i][j][0]=999999;
+                nodemap[i][j][1]=999999;
+                nodemap[i][j][2]=999999;
+            }
+            
+        }
         double s,e,l,w,lm,sw;
-        int nodemap[n][n][3];
         while (inputfile>>s>>e>>l>>w>>lm){
             //inputfile>>s>>e>>l>>w>>lm;
             if(s>e){
@@ -90,13 +100,7 @@ int main(int argc, char const *argv[])
             ws.push_back(w);
             limits.push_back(lm);
         }
-        {
-            /* code */
-        }
-        
         inputfile.close();
     }
-    
-    /* code */
     return 0;
 }
