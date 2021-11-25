@@ -6,14 +6,46 @@ using namespace std;
 class route{
     public:
         double snode, enode,limit;
-        int intsnode,intenode;
+        int intsnode,intenode,truelimit;
         double rl,rw;
 
         void setValue(double,double,double,double,double);
         bool exam(int);
         void print();
+        void checklm();
         void transfer(int);
 }Sample;
+
+//class
+//checklm(): 以路寬將錯誤的定義刪除
+
+void route::checklm(void){
+    //roadlimit=[0.5,1.5,2,4,6];
+    //11111全可過
+    //01111
+    //00111
+    //若路寬為最大，則不需改道路通行限制
+    truelimit=limit;
+    if(rw>=6.){
+        truelimit=limit;
+    }
+    else if(rw>=4. and limit>10000){
+        truelimit%=10000;
+    }
+    else if(rw>=2 and limit>111){
+        truelimit%=1000;
+    }
+    else if(rw>=1.5 and limit>11){
+        truelimit%=100;
+    }
+    else if(rw>=0.5 and limit>1){
+        truelimit%=10;
+    }
+}
+
+//class
+//小數、整數轉換
+
 void route::transfer(int result){
     if(result){
     intsnode=int(snode);
@@ -24,14 +56,21 @@ void route::transfer(int result){
         intenode=0;
     }
 }
+
+//class
+//設值
+
 void route::setValue(double s,double e,double l,double w,double lm){
     snode=s;
     enode=e;
     rl=l;
     rw=w;
     limit=lm;
-
 }
+
+//class
+//驗證資料＆略過錯誤資料
+
 bool route::exam(int n){
     bool valid=true;
     if (snode<0 or snode>=n or enode<0 or enode>=n){
@@ -58,23 +97,16 @@ bool route::exam(int n){
     return valid;
     
 }
+//輸出
 void route::print(){
     cout<<"From node"<<snode<<"to"<<enode<<", the distance is"<<rl<<", road width is"<<rw<<",road limitation is"<<limit<<endl;
 }
 
-int miniDistance(int dist[],bool sptSet[],int V){
-    int min=INT_MAX, min_index;
- 
-    for (int v = 0; v < V; v++)
-        if (sptSet[v] == false && dist[v] <= min)
-            min = dist[v], min_index = v;
- 
-    return min_index;
-}
+
 int main(int argc, char const *argv[])
 {
+    //read file
     int n;
-    
     vector<int> starts,ends,ls,ws,limits;
     //open files
     ifstream inputfile;
@@ -87,6 +119,7 @@ int main(int argc, char const *argv[])
     {
         for (int j = 0; j < n; j++)
         {
+            //3D array initialize
             nodemap[i][j][0]=INT_MAX;
             nodemap[i][j][1]=INT_MAX;
             nodemap[i][j][2]=INT_MAX;
@@ -94,22 +127,22 @@ int main(int argc, char const *argv[])
     }
 
     double s,e,l,w,lm;
+    //write file data into 3-D array
     while (inputfile>>s>>e>>l>>w>>lm){
         int is,ie;
-        //inputfile>>s>>e>>l>>w>>lm;
         Sample.setValue(s,e,l,w,lm);
         bool result = Sample.exam(n);
         Sample.transfer(result);
         if (result){
-            //TODO 缺驗證內容，以路寬為基準，限制為輔
             int is=s;
             int ie=e;
-            cout<<"write position:"<<is<<","<<ie<<"info"<<l<<w<<lm<<endl;
+            Sample.checklm();
+            //cout<<"write position:"<<is<<", "<<ie<<"info "<<l<<w<<lm<<endl;
             nodemap[is][ie][0]=l;
             nodemap[is][ie][1]=w;
-            nodemap[is][ie][2]=lm;
+            nodemap[is][ie][2]=Sample.truelimit;
         }
-        cout<<s<<" "<<e<<" "<<l<<" "<<w<<" "<<lm<<" "<<(result?"Valid":"Invalid")<<endl;
+        //cout<<s<<" "<<e<<" "<<l<<" "<<w<<" "<<lm<<" "<<(result?"Valid":"Invalid")<<endl;
         starts.push_back(s);
         ends.push_back(e);
         ls.push_back(l);
@@ -117,7 +150,16 @@ int main(int argc, char const *argv[])
         limits.push_back(lm);
     }
     inputfile.close();
-
+    /*
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            cout<<"road width is "<<nodemap[i][j][1]<<" limit is"<<nodemap[i][j][2]<<endl;
+        }
+        
+    }
+    */
     cout<<"Please input start node, end node, and approach:";
     int start,end,approach;
     cin>>start>>end>>approach;
@@ -133,19 +175,19 @@ int main(int argc, char const *argv[])
     dist[0]=0;
     for (int ct = 0; ct < n-1; ct++)
     {
-        int u=miniDistance(dist,sptSet,n);
+        int min=INT_MAX, min_index;
+        for (int v = 0; v < n; v++)
+            if (sptSet[v] == false && dist[v] <= min)
+                min = dist[v], min_index = v;
+        int u=min_index;
         sptSet[u] = true;
         for (int v = 0; v < n; v++)
         {
             if (!sptSet[v] && nodemap[u][v][0] && dist[u] != INT_MAX && dist[u] + nodemap[u][v][0] < dist[v])
                 dist[v] = dist[u] + nodemap[u][v][0];
         }
-        
     }
-    for (int i = 0; i < n; i++)
+for (int i = 0; i < n; i++)
         cout  << i << " \t\t"<<dist[i]<< endl;
-    
-    
-
-    return 0;
+return 0;
 }
