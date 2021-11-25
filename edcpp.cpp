@@ -167,11 +167,13 @@ int main(int argc, char const *argv[])
     start-=1;end-=1;
     int dist[n];
     bool sptSet[n];
+    //initial dist and sptset array
     for (int i = 0; i < n; i++)
     {
         dist[i]=INT_MAX;
         sptSet[i]=false;
     }
+    //set start point
     dist[0]=0;
     for (int ct = 0; ct < n-1; ct++)
     {
