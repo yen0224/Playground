@@ -174,8 +174,9 @@ int main(int argc, char const *argv[])
         sptSet[i]=false;
     }
     //set start point
-    dist[0]=0;
-    for (int ct = 0; ct < n-1; ct++)
+    dist[start]=0;
+
+    for (int i = 0;  i< n; ++i)
     {
         int min=INT_MAX, min_index;
         for (int v = 0; v < n; v++)
@@ -191,5 +192,6 @@ int main(int argc, char const *argv[])
     }
 for (int i = 0; i < n; i++)
         cout  << i << " \t\t"<<dist[i]<< endl;
-return 0;
+    cout<<"from"<<start+1<<"to"<<end+1<<"distance is"<<dist[end];
+    return 0;
 }
