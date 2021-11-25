@@ -62,6 +62,15 @@ void route::print(){
     cout<<"From node"<<snode<<"to"<<enode<<", the distance is"<<rl<<", road width is"<<rw<<",road limitation is"<<limit<<endl;
 }
 
+int miniDistance(int dist[],bool sptSet[],int V){
+    int min=INT_MAX, min_index;
+ 
+    for (int v = 0; v < V; v++)
+        if (sptSet[v] == false && dist[v] <= min)
+            min = dist[v], min_index = v;
+ 
+    return min_index;
+}
 int main(int argc, char const *argv[])
 {
     int n;
@@ -71,67 +80,72 @@ int main(int argc, char const *argv[])
     ifstream inputfile;
     inputfile.open("test3.txt");
     //nodemap:[0]road length [1]road width [2]limit
-        inputfile>>n;
-        cout<<"n="<<n<<endl;
-        double nodemap[n][n][3];
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < n; j++)
-            {
-                nodemap[i][j][0]=-1;
-                nodemap[i][j][1]=-1;
-                nodemap[i][j][2]=-1;
-            }
-            
-        }
-        
-        double s,e,l,w,lm;
-        while (inputfile>>s>>e>>l>>w>>lm){
-            int is,ie;
-            //inputfile>>s>>e>>l>>w>>lm;
-            Sample.setValue(s,e,l,w,lm);
-            bool result = Sample.exam(n);
-            Sample.transfer(result);
-            if (result){
-                //TODO 缺驗證內容，以路寬為基準，限制為輔
-                int is=s;
-                int ie=e;
-                cout<<"write position:"<<is<<","<<ie<<"info"<<l<<w<<lm<<endl;
-                nodemap[is][ie][0]=l;
-                //nodemap[is][ie][1]=w;
-                //nodemap[is][ie][2]=lm;
-            }
-            cout<<s<<" "<<e<<" "<<l<<" "<<w<<" "<<lm<<" "<<(result?"Valid":"Invalid")<<endl;
-            starts.push_back(s);
-            ends.push_back(e);
-            ls.push_back(l);
-            ws.push_back(w);
-            limits.push_back(lm);
-        }
-        inputfile.close();
-        
-    
+    inputfile>>n;
+    cout<<"n="<<n<<endl;
+    double nodemap[n][n][3];
     for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
         {
-            for (int j = 0; j < n; j++)
-            {
-                cout<<i<<","<<j<<" ";
-                
-                cout<<"\t"<<nodemap[i][j][0]<<" ";
-                /*cout<<nodemap[i][j][1]<<" ";
-                cout<<nodemap[i][j][2]<<" ";*/
-           }
-            cout<<endl;  
+            nodemap[i][j][0]=INT_MAX;
+            nodemap[i][j][1]=INT_MAX;
+            nodemap[i][j][2]=INT_MAX;
         }
-    
-    
-    cout<<"Please input start node, end node, and approach:";
-    int rq_s,rq_e,rq_a;
-    cin>>rq_s>>rq_e>>rq_a;
-    rq_s-=1;rq_e-=1;
-    int step=0, dis=0, mid_node=0;
-    while(mid_node!=rq_e){
-
     }
+
+    double s,e,l,w,lm;
+    while (inputfile>>s>>e>>l>>w>>lm){
+        int is,ie;
+        //inputfile>>s>>e>>l>>w>>lm;
+        Sample.setValue(s,e,l,w,lm);
+        bool result = Sample.exam(n);
+        Sample.transfer(result);
+        if (result){
+            //TODO 缺驗證內容，以路寬為基準，限制為輔
+            int is=s;
+            int ie=e;
+            cout<<"write position:"<<is<<","<<ie<<"info"<<l<<w<<lm<<endl;
+            nodemap[is][ie][0]=l;
+            nodemap[is][ie][1]=w;
+            nodemap[is][ie][2]=lm;
+        }
+        cout<<s<<" "<<e<<" "<<l<<" "<<w<<" "<<lm<<" "<<(result?"Valid":"Invalid")<<endl;
+        starts.push_back(s);
+        ends.push_back(e);
+        ls.push_back(l);
+        ws.push_back(w);
+        limits.push_back(lm);
+    }
+    inputfile.close();
+
+    cout<<"Please input start node, end node, and approach:";
+    int start,end,approach;
+    cin>>start>>end>>approach;
+    //符合陣列的index
+    start-=1;end-=1;
+    int dist[n];
+    bool sptSet[n];
+    for (int i = 0; i < n; i++)
+    {
+        dist[i]=INT_MAX;
+        sptSet[i]=false;
+    }
+    dist[0]=0;
+    for (int ct = 0; ct < n-1; ct++)
+    {
+        int u=miniDistance(dist,sptSet,n);
+        sptSet[u] = true;
+        for (int v = 0; v < n; v++)
+        {
+            if (!sptSet[v] && nodemap[u][v][0] && dist[u] != INT_MAX && dist[u] + nodemap[u][v][0] < dist[v])
+                dist[v] = dist[u] + nodemap[u][v][0];
+        }
+        
+    }
+    for (int i = 0; i < n; i++)
+        cout  << i << " \t\t"<<dist[i]<< endl;
+    
+    
+
     return 0;
 }
