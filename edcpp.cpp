@@ -74,23 +74,23 @@ void route::setValue(double s,double e,double l,double w,double lm){
 bool route::exam(int n){
     bool valid=true;
     if (snode<0 or snode>=n or enode<0 or enode>=n){
-        cout<<"Node is out of range.";
+        cout<<"Node is out of range.:";
         valid=false;
     }
     if(snode!=int(snode)||enode!=int(enode)){
-        cout<<"One of or Both of Node is/are not integers.";
+        cout<<"One of or Both of Node is/are not integers.:";
         valid=false;
     }
     if(snode==enode){
-        cout<<"self loop";
+        cout<<"self loop:";
         valid=false;
     }
     if (rl<0){
-        cout<<"road length is negative";
+        cout<<"road length is negative:";
         valid=false;
     }
     if(rw<0){
-        cout<<"road width is negative";
+        cout<<"road width is negative:";
         valid=false;
     }
     
@@ -99,7 +99,7 @@ bool route::exam(int n){
 }
 //輸出
 void route::print(){
-    cout<<"From node"<<snode<<"to"<<enode<<", the distance is"<<rl<<", road width is"<<rw<<",road limitation is"<<limit<<endl;
+    cout<<endl<<"From node "<<snode<<"to "<<enode<<" , the distance is"<<rl<<", road width is "<<rw<<" ,road limitation is "<<limit<<endl;
 }
 
 
@@ -142,6 +142,9 @@ int main(int argc, char const *argv[])
             nodemap[is][ie][1]=w;
             nodemap[is][ie][2]=Sample.truelimit;
         }
+        else{
+            Sample.print();
+        }
         //cout<<s<<" "<<e<<" "<<l<<" "<<w<<" "<<lm<<" "<<(result?"Valid":"Invalid")<<endl;
         starts.push_back(s);
         ends.push_back(e);
@@ -179,19 +182,38 @@ int main(int argc, char const *argv[])
     for (int i = 0;  i< n; ++i)
     {
         int min=INT_MAX, min_index;
-        for (int v = 0; v < n; v++)
+        bool route_Valid=false;
+        for (int v = 0; v < n; v++){
             if (sptSet[v] == false && dist[v] <= min)
                 min = dist[v], min_index = v;
+            
+        }
         int u=min_index;
         sptSet[u] = true;
         for (int v = 0; v < n; v++)
         {
-            if (!sptSet[v] && nodemap[u][v][0] && dist[u] != INT_MAX && dist[u] + nodemap[u][v][0] < dist[v])
+            switch (approach)
+            {
+            case 1:
+                int(nodemap[u][v][2])%10==1?route_Valid=true:route_Valid=false;
+                break;
+            case 2:
+                int(nodemap[u][v][2])%100>=10?route_Valid=true:route_Valid=false;
+                break;
+            case 3:
+                int(nodemap[u][v][2])%1000>=100?route_Valid=true:route_Valid=false;
+                break;
+            case 4:
+                int(nodemap[u][v][2])%10000>=1000?route_Valid=true:route_Valid=false;
+                break;
+            case 5:
+                int(nodemap[u][v][2])/10000==1?route_Valid=true:route_Valid=false;
+                break;
+            }
+            if (!sptSet[v] && nodemap[u][v][0] && dist[u] != INT_MAX && route_Valid&& dist[u] + nodemap[u][v][0] < dist[v])
                 dist[v] = dist[u] + nodemap[u][v][0];
         }
     }
-for (int i = 0; i < n; i++)
-        cout  << i << " \t\t"<<dist[i]<< endl;
-    cout<<"from"<<start+1<<"to"<<end+1<<"distance is"<<dist[end];
+    cout<<"from "<<start+1<<" to" <<end+1<<" distance is "<<dist[end];
     return 0;
 }
