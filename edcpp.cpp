@@ -74,23 +74,23 @@ void route::setValue(double s,double e,double l,double w,double lm){
 bool route::exam(int n){
     bool valid=true;
     if (snode<0 or snode>=n or enode<0 or enode>=n){
-        cout<<"Node is out of range.:";
+        cout<<"error::Node is out of range.:";
         valid=false;
     }
     if(snode!=int(snode)||enode!=int(enode)){
-        cout<<"One of or Both of Node is/are not integers.:";
+        cout<<"error::One of or Both of Node is/are not integers.:";
         valid=false;
     }
     if(snode==enode){
-        cout<<"self loop:";
+        cout<<"error::self loop:";
         valid=false;
     }
     if (rl<0){
-        cout<<"road length is negative:";
+        cout<<"error::road length is negative:";
         valid=false;
     }
     if(rw<0){
-        cout<<"road width is negative:";
+        cout<<"error::road width is negative:";
         valid=false;
     }
     
